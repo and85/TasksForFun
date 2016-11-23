@@ -38,10 +38,18 @@ namespace BigFileSorter
             var fileGenerator = new FileGenerator();
             fileGenerator.GenerateFile("File.txt", 10);
             */
+            const int N = 10;
+            int[] a = new int[N] { 23, 22, 43, 65, 65, 54, 34, 34, 66, 10 };
+            int[] b = new int[N];
+
+            var sort = new MergeSortImplementation();
+            sort.TopDownMergeSort(a, b, N);
 #if DEBUG
             Console.WriteLine("END");
             Console.ReadLine();
 #endif
         }
+
+        
     }
 }

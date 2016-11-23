@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="FileGenerator.cs" />
     <Compile Include="FileSorter.cs" />
+    <Compile Include="MergeSortImplementation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
