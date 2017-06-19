@@ -56,11 +56,7 @@ namespace SocialNetworkGraph
             node7.Friends.Add(node8);
             node8.Friends.Add(node7);
 
-            //SuggestFriends(node2, 4);
-            var resultFriends = new HashSet<Node>();
-            SuggestFriends(node2, node2, 3, resultFriends);
-
-            foreach (var friend in resultFriends)
+            foreach (var friend in SuggestFriends(node2, 3))
             {
                 Console.WriteLine(friend.VertexIndex);
             }
@@ -82,11 +78,17 @@ namespace SocialNetworkGraph
         /// </summary>
         //private static HashSet<Node> _resultFriends = new HashSet<Node>();
 
-        public static HashSet<Node> SuggestFriends(Node node, Node initialRoot, int depth, HashSet<Node> resultFriends)
+        public static HashSet<Node> SuggestFriends(Node node, int depth)
+        {
+            var resultFriends = new HashSet<Node>();
+            return SuggestFriends(node, node, depth, resultFriends);
+        }
+
+        private static HashSet<Node> SuggestFriends(Node node, Node initialRoot, int depth, HashSet<Node> resultFriends)
         {
             if (depth == 0)
             {
-                return RemoveOddNodes(initialRoot, resultFriends); 
+                return RemoveOddNodes(initialRoot, resultFriends);
             }
 
             foreach (var friend in node.Friends)
@@ -94,8 +96,8 @@ namespace SocialNetworkGraph
                 SuggestFriends(friend, initialRoot, depth - 1, resultFriends);
                 resultFriends.Add(friend);
             }
-            
-            return RemoveOddNodes(initialRoot, resultFriends); 
+
+            return RemoveOddNodes(initialRoot, resultFriends);
         }
 
         private static HashSet<Node> RemoveOddNodes(Node root, HashSet<Node> resultFriends)
