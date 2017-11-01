@@ -6,64 +6,76 @@ using System.Threading.Tasks;
 
 namespace SocialNetworkGraph
 {
+    // used https://www.draw.io to draw a diagram
     class Program
     {
         public class Node
         {
             public int VertexIndex { get; set; }
+            public string Name { get; set; }
 
-            private List<Node> _friend;
+            private List<Node> _friends;
             public List<Node> Friends
             {
                 get
                 {
-                    if (_friend == null)
-                        _friend = new List<Node>();
-                    return _friend;
+                    if (_friends == null)
+                        _friends = new List<Node>();
+                    return _friends;
                 }
             }
         }
 
+        private static Node _node1 = new Node() { VertexIndex = 1, Name = "Anna" };
+        private static Node _node2 = new Node() { VertexIndex = 2, Name = "Bill" };
+        private static Node _node3 = new Node() { VertexIndex = 3, Name = "Bob" };
+        private static Node _node4 = new Node() { VertexIndex = 4, Name = "Mickey Mouse" };
+        private static Node _node5 = new Node() { VertexIndex = 5, Name = "Mr. Bean" };
+        private static Node _node6 = new Node() { VertexIndex = 6, Name = "Darek" };
+        private static Node _node7 = new Node() { VertexIndex = 7, Name = "Anna" };
+        private static Node _node8 = new Node() { VertexIndex = 8, Name = "Mr. Weirdo" };
+
         static void Main(string[] args)
-        {
-            var node1 = new Node() { VertexIndex = 1 };
-            var node2 = new Node() { VertexIndex = 2 };
-            var node3 = new Node() { VertexIndex = 3 };
-            var node4 = new Node() { VertexIndex = 4 };
-            var node5 = new Node() { VertexIndex = 5 };
-            var node6 = new Node() { VertexIndex = 6 };
-            var node7 = new Node() { VertexIndex = 7 };
-            var node8 = new Node() { VertexIndex = 8 };
+        {            
+            SetRelations();
 
-            node1.Friends.Add(node2);
-            node1.Friends.Add(node3);
-            node1.Friends.Add(node6);
-            node2.Friends.Add(node1);
-            node2.Friends.Add(node3);
-            node3.Friends.Add(node1);
-            node3.Friends.Add(node2);
-            node3.Friends.Add(node4);
-            node3.Friends.Add(node5);
-            node4.Friends.Add(node3);
-            node4.Friends.Add(node5);
-            node5.Friends.Add(node3);
-            node5.Friends.Add(node4);
-            node5.Friends.Add(node7);
-            node6.Friends.Add(node1);
-            node6.Friends.Add(node7);
-            node7.Friends.Add(node5);
-            node7.Friends.Add(node6);
-            node7.Friends.Add(node8);
-            node8.Friends.Add(node7);
-
-            foreach (var friend in SuggestFriends(node2, 3))
+            Console.WriteLine("Suggested friends, max depth 2:");
+            foreach (var friend in SuggestFriendsMaxDepth(_node1, 2))
             {
-                Console.WriteLine(friend.VertexIndex);
+                Console.WriteLine($"{friend.VertexIndex} {friend.Name}");
+            }
+
+            Console.WriteLine("Suggested friends, max depth 3:");
+            foreach (var friend in SuggestFriendsMaxDepth(_node1, 3))
+            {
+                Console.WriteLine($"{friend.VertexIndex} {friend.Name}");
             }
 #if DEBUG
             Console.WriteLine("END");
             Console.ReadLine();
 #endif
+        }
+
+        private static void SetRelations()
+        {
+            _node1.Friends.Add(_node2);
+            _node1.Friends.Add(_node4);
+            _node1.Friends.Add(_node3);
+            _node2.Friends.Add(_node1);
+            _node2.Friends.Add(_node4);
+            _node3.Friends.Add(_node1);
+            _node3.Friends.Add(_node5);
+            _node3.Friends.Add(_node6);
+            _node4.Friends.Add(_node1);
+            _node4.Friends.Add(_node2);
+            _node4.Friends.Add(_node7);
+            _node5.Friends.Add(_node3);
+            _node6.Friends.Add(_node3);
+            _node6.Friends.Add(_node7);
+            _node7.Friends.Add(_node4);
+            _node7.Friends.Add(_node6);
+            _node7.Friends.Add(_node8);
+            _node8.Friends.Add(_node7);
         }
 
         public static List<Node> FindFriends(Node node)
@@ -72,19 +84,27 @@ namespace SocialNetworkGraph
         }
 
         /// <summary>
-        /// Suggests friends to a user according to a required Depth. 
-        /// if depth is 3, for node2 we should return 4, 5, 6, 7 but not 8
-        // if depth is 2, for node2 we should return 6, 5, 4
-        /// </summary>
-        //private static HashSet<Node> _resultFriends = new HashSet<Node>();
-
-        public static HashSet<Node> SuggestFriends(Node node, int depth)
+        /// Suggests friends to a user according to a required Depth.         
+        /// </summary>        
+        public static HashSet<Node> SuggestFriendsMaxDepth(Node node, int depth)
         {
             var resultFriends = new HashSet<Node>();
-            return SuggestFriends(node, node, depth, resultFriends);
+            return SuggestFriendsMaxDepth(node, node, depth, resultFriends);
         }
 
-        private static HashSet<Node> SuggestFriends(Node node, Node initialRoot, int depth, HashSet<Node> resultFriends)
+        /// <summary>
+        /// Suggests friends only from required depth, 
+        /// i.e. if depth is 3 for "1 Anna". Algorithm shouldn't suggest 
+        /// Mr. Bean and Darek (because for them depth is 2). 
+        /// Anna 7 should be excluded because it could be reached either in 2 or 3 steps.
+        /// Mr. Weirdo should be suggested as a friend, because the shortest path to him is 3
+        /// </summary>        
+        public static HashSet<Node> SuggestFriendsStrictDepth(Node node, int depth)
+        {
+            return new HashSet<Node>();
+        }
+
+        private static HashSet<Node> SuggestFriendsMaxDepth(Node node, Node initialRoot, int depth, HashSet<Node> resultFriends)
         {
             if (depth == 0)
             {
